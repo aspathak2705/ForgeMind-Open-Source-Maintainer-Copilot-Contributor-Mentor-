@@ -31,7 +31,9 @@ class RepositoryIndexer:
                 (
                     parsed.path,
                     json.dumps(parsed.imports),
-                    json.dumps(parsed.classes),
+                    json.dumps(
+                        [cls.model_dump() for cls in parsed.classes]
+                    ),
                     json.dumps(parsed.functions)
                 )
             )

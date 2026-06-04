@@ -2,6 +2,7 @@ import ast
 from pathlib import Path
 
 from core.models.file_node import FileNode
+from core.models.class_node import ClassNode
 
 
 class PythonParser:
@@ -31,7 +32,16 @@ class PythonParser:
                     imports.append(node.module)
             
             elif isinstance(node, ast.ClassDef):
-                classes.append(node.name)
+                classes.append(
+                    ClassNode(
+                        name=node.name,
+                        methods=[
+                            item.name
+                            for item in node.body
+                            if isinstance(item, ast.FunctionDef)
+                        ]
+                    )
+                )
 
             elif isinstance(node, ast.FunctionDef):
                 functions.append(node.name)
@@ -42,3 +52,17 @@ class PythonParser:
             classes = classes,
             functions = functions
         )
+
+    def extract_class(node: ast.ClassDef):
+
+        methods = []
+
+        for item in node.body:
+            if isinstance(item, ast.FunctionDef):
+                methods.append(item.name)
+
+        return {
+            "name": node.name,
+            "methods": methods,
+            "base_classes": []
+        }
