@@ -25,6 +25,11 @@ from core.issue.reproduction_generator import (
 from core.issue.recommendation_engine import (
     RecommendationEngine,
 )
+from core.issue.repository_importance import RepositoryImportance
+
+from core.issue.severity_calculator import (
+    SeverityCalculator,
+)
 
 
 class IssueAgent:
@@ -55,6 +60,12 @@ class IssueAgent:
             RecommendationEngine()
         )
 
+        self.importance = RepositoryImportance()
+
+        self.severity_calculator = (
+            SeverityCalculator()
+        )
+
     def analyze(
         self,
         issue_text: str,
@@ -78,10 +89,19 @@ class IssueAgent:
             )
         )
 
+        importance_scores = [
+            self.importance.calculate(
+                file_name
+            )
+            for file_name in context["files"]
+        ]
+
         verification, confidence = (
             self.verifier.verify(
+                issue_text,
                 context["files"],
                 context["classes"],
+                importance_scores,
             )
         )
 
@@ -95,6 +115,21 @@ class IssueAgent:
             self.recommender.generate(
                 severity,
                 context["files"],
+            )
+        )
+
+        avg_importance = (
+            sum(importance_scores)
+            // max(
+                len(importance_scores),
+                1
+            )
+        )
+
+        severity = (
+            self.severity_calculator.calculate(
+                issue_type,
+                avg_importance,
             )
         )
 

@@ -17,7 +17,7 @@ forgemind = "main:app"
 py-modules = ["main"]
 
 [tool.setuptools.packages.find]
-include = ["commands*", "core*", "storage*"]
+include = ["agents*", "commands*", "core*", "storage*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

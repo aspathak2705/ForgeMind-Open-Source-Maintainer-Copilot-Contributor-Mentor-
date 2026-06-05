@@ -1,81 +1,30 @@
-import re
-
-from core.search.repository_search import (
-    RepositorySearch,
-)
+from agents.repository_agent.repository_agent import RepositoryAgent
 
 
 class IssueAnalyzer:
 
-    STOP_WORDS = {
-        "a",
-        "add",
-        "an",
-        "api",
-        "configure",
-        "do",
-        "how",
-        "i",
-        "mode",
-        "support",
-        "the",
-        "to",
-        "when",
-        "with",
-    }
-
-    AUTH_HINTS = {
-        "auth",
-        "credential",
-        "credentials",
-        "jwt",
-        "login",
-        "password",
-        "token",
-    }
-
     def __init__(self):
+        self.repo_agent = RepositoryAgent()
 
-        self.search = RepositorySearch()
+    def analyze(
+        self,
+        issue_text: str,
+    ):
 
-    def analyze(self, issue_text: str):
-
-        words = set(
-            re.findall(
-            r"[a-z0-9_]+",
-            issue_text.lower(),
-            )
-        )
-
-        words = {
-            word for word in words
-            if len(word) >= 3
-            and word not in self.STOP_WORDS
-        }
-
-        if words & self.AUTH_HINTS:
-            words.update(
-                {
-                    "auth",
-                    "jwt",
-                }
-            )
+        words = issue_text.lower().split()
 
         files = set()
         classes = set()
 
         for word in words:
 
-            results = self.search.search(word)
+            context = self.repo_agent.get_repository_context(word)
 
-            for result in results:
+            if not context:
+                continue
 
-                files.add(result.file_path)
-
-                if result.match_type == "class":
-                    classes.add(
-                        result.matched_value
-                    )
+            files.update(context["files"])
+            classes.update(context["classes"])
 
         return {
             "files": list(files),
