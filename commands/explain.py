@@ -1,58 +1,141 @@
-from core.services.explain_service import ExplainService
+from agents.repository_agent.repository_agent import (
+    RepositoryAgent,
+)
 
 
 def explain(query: str):
 
-    service = ExplainService()
+    agent = RepositoryAgent()
 
-    result = service.explain(query)
+    context = (
+        agent.get_enriched_context(
+            query
+        )
+    )
 
-    if not result:
-        print("No matches found")
+    if not context:
+
+        print(
+            f"\nNo repository context found for '{query}'."
+        )
+
         return
 
+    print("\n" + "=" * 50)
+    print(
+        f"Repository Explanation: {query}"
+    )
+    print("=" * 50)
+
     print()
 
-    print(f"Repository Explanation: {query}")
+    # Files Section
+    files = context.get(
+        "files",
+        []
+    )
 
-    print()
+    if files:
 
-    if result["files"]:
+        print("Files")
+        print("-" * 20)
 
-        print("Files:")
+        for file_info in files:
 
-        for file in sorted(result["files"]):
+            print(
+                f"File: {file_info['file']}"
+            )
 
-            print(f"- {file}")
+            print(
+                f"Importance: "
+                f"{file_info['importance']}"
+            )
+
+            print(
+                f"Difficulty: "
+                f"{file_info['difficulty']}"
+            )
+
+            print(
+                f"Impact Score: "
+                f"{file_info['impact_score']}"
+            )
+
+            dependents = (
+                file_info.get(
+                    "dependents",
+                    []
+                )
+            )
+
+            if dependents:
+
+                print(
+                    "Dependents:"
+                )
+
+                for dep in dependents:
+
+                    print(
+                        f"  - {dep}"
+                    )
+
+            print()
+
+    # Classes Section
+    classes = context.get(
+        "classes",
+        []
+    )
+
+    functions = context.get(
+        "functions",
+        []
+    )
+
+    if classes:
+
+        print("Classes")
+        print("-" * 20)
+
+        for class_name in classes:
+
+            print(
+                f"- {class_name}"
+            )
 
         print()
 
-    if result["classes"]:
+    if functions:
 
-        print("Classes:")
+        print("Functions")
+        print("-" * 20)
 
-        for cls in sorted(result["classes"]):
+        for function_name in functions:
 
-            print(f"- {cls}")
-
-        print()
-
-    if result["functions"]:
-
-        print("Functions:")
-
-        for func in sorted(result["functions"]):
-
-            print(f"- {func}")
+            print(
+                f"- {function_name}"
+            )
 
         print()
 
-    if result["imports"]:
+    # Imports Section
+    imports = context.get(
+        "imports",
+        []
+    )
 
-        print("Imports:")
+    if imports:
 
-        for imp in sorted(result["imports"]):
+        print("Imports")
+        print("-" * 20)
 
-            print(f"- {imp}")
+        for imp in imports:
+
+            print(
+                f"- {imp}"
+            )
 
         print()
+
+    print("=" * 50)

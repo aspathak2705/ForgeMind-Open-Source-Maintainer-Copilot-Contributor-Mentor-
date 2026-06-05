@@ -1,44 +1,210 @@
-from core.issue.repository_importance import RepositoryImportance
-from core.services.explain_service import ExplainService
-from pathlib import Path
+from core.services.explain_service import (
+    ExplainService,
+)
+
+from core.repository.impact_analyzer import (
+    ImpactAnalyzer,
+)
+
+from core.repository.repository_ranker import (
+    RepositoryRanker,
+)
+
 
 class RepositoryAgent:
 
     def __init__(self):
 
-        self.service = ExplainService()
-        self.importance = RepositoryImportance()
+        self.explainer = ExplainService()
 
-    def explain(self,
-                query: str,):
-        
-        return self.service.explain(query)
+        self.impact_analyzer = (
+            ImpactAnalyzer()
+        )
 
-    def get_repository_context(self,query: str):
-        explanation = self.service.explain(query)
+        self.ranker = (
+            RepositoryRanker()
+        )
 
-        if not explanation:
+    def explain(
+        self,
+        query: str,
+    ):
+
+        return self.explainer.explain(
+            query
+        )
+
+    def get_repository_context(
+        self,
+        query: str,
+    ):
+
+        return self.explainer.explain(
+            query
+        )
+
+    def get_file_impact(
+        self,
+        file_path: str,
+    ):
+
+        return (
+            self.impact_analyzer.analyze(
+                file_path
+            )
+        )
+
+    def get_file_importance(
+        self,
+        file_path: str,
+    ):
+
+        ranking = (
+            self.ranker.rank_file(
+                file_path
+            )
+        )
+
+        return ranking["importance"]
+
+    def get_file_difficulty(
+        self,
+        file_path: str,
+    ):
+
+        ranking = (
+            self.ranker.rank_file(
+                file_path
+            )
+        )
+
+        return ranking["difficulty"]
+
+    def get_enriched_context(
+        self,
+        query: str,
+    ):
+
+        context = (
+            self.get_repository_context(
+                query
+            )
+        )
+
+        if not context:
             return None
 
-        files = sorted(
-            {
-                Path(file_path).name
-                for file_path in explanation["files"]
-            }
-        )
-        classes = sorted(explanation["classes"])
+        enriched_files = []
+
+        for file_path in context["files"]:
+
+            ranking = (
+                self.ranker.rank_file(
+                    file_path
+                )
+            )
+
+            impact = (
+                self.impact_analyzer.analyze(
+                    file_path
+                )
+            )
+
+            enriched_files.append(
+                {
+                    "file": file_path,
+                    "importance": ranking[
+                        "importance"
+                    ],
+                    "difficulty": ranking[
+                        "difficulty"
+                    ],
+                    "impact_score": impact[
+                        "impact_score"
+                    ],
+                    "dependents": impact[
+                        "dependents"
+                    ],
+                }
+            )
 
         return {
-            "files": files,
-            "classes": classes,
-            "imports": sorted(explanation["imports"]),
-            "importance": {
-                Path(file_path).name: self.importance.calculate(file_path)
-                for file_path in explanation["files"]
-            },
+            "files": enriched_files,
+            "classes": list(
+                context.get(
+                    "classes",
+                    []
+                )
+            ),
+            "functions": list(
+                context.get(
+                    "functions",
+                    []
+                )
+            ),
+            "imports": list(
+                context.get(
+                    "imports",
+                    []
+                )
+            ),
         }
 
+    def search_repository_context(
+        self,
+        query: str,
+    ):
 
+        context = (
+            self.explainer.explain(
+                query
+            )
+        )
 
+        if not context:
+            return None
 
-    
+        enriched_files = []
+
+        for file_path in context["files"]:
+
+            ranking = (
+                self.ranker.rank_file(
+                    file_path
+                )
+            )
+
+            impact = (
+                self.impact_analyzer
+                .analyze(
+                    file_path
+                )
+            )
+
+            enriched_files.append(
+                {
+                    "file": file_path,
+                    "importance": ranking[
+                        "importance"
+                    ],
+                    "difficulty": ranking[
+                        "difficulty"
+                    ],
+                    "impact_score": impact[
+                        "impact_score"
+                    ],
+                    "dependents": impact[
+                        "dependents"
+                    ],
+                }
+            )
+
+        return {
+            "files": enriched_files,
+            "classes": context[
+                "classes"
+            ],
+            "imports": context[
+                "imports"
+            ],
+        }
