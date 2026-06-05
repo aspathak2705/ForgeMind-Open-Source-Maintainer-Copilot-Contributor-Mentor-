@@ -5,6 +5,7 @@ from commands.index import index
 from commands.summary import summary
 from commands.ask import ask
 from commands.explain import explain
+from commands.triage import triage
 
 
 app = typer.Typer()
@@ -14,6 +15,7 @@ app.command()(summary)
 app.command()(graph)
 app.command()(ask)
 app.command()(explain)
+app.command()(triage)
 
 if __name__ == "__main__":
     app()
