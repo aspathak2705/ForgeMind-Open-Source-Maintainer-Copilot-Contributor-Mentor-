@@ -59,11 +59,6 @@ def explain(query: str):
                 f"{file_info['difficulty']}"
             )
 
-            print(
-                f"Impact Score: "
-                f"{file_info['impact_score']}"
-            )
-
             dependents = (
                 file_info.get(
                     "dependents",

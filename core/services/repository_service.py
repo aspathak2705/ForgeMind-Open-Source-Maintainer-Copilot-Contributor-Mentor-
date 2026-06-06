@@ -77,3 +77,89 @@ class RepositoryService:
         )
 
         return cursor.fetchone()[0]
+    
+    def get_summary(self):
+
+        cursor = self.conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT
+                imports,
+                classes,
+                functions
+            FROM files
+            """
+        )
+
+        rows = cursor.fetchall()
+
+        total_files = len(rows)
+
+        total_classes = 0
+        total_functions = 0
+
+        import_counter = {}
+
+        for (
+            imports,
+            classes,
+            functions,
+        ) in rows:
+
+            class_list = [
+                item.strip()
+                for item in (
+                    classes or ""
+                ).split(",")
+                if item.strip()
+            ]
+
+            function_list = [
+                item.strip()
+                for item in (
+                    functions or ""
+                ).split(",")
+                if item.strip()
+            ]
+
+            import_list = [
+                item.strip()
+                for item in (
+                    imports or ""
+                ).split(",")
+                if item.strip()
+            ]
+
+            total_classes += len(
+                class_list
+            )
+
+            total_functions += len(
+                function_list
+            )
+
+            for module in import_list:
+
+                import_counter[
+                    module
+                ] = (
+                    import_counter.get(
+                        module,
+                        0,
+                    )
+                    + 1
+                )
+
+        most_imported = sorted(
+            import_counter.items(),
+            key=lambda x: x[1],
+            reverse=True,
+        )[:10]
+
+        return {
+            "files": total_files,
+            "classes": total_classes,
+            "functions": total_functions,
+            "most_imported": most_imported,
+        }

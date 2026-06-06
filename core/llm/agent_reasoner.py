@@ -66,3 +66,19 @@ class AgentReasoner:
         return self.llm.generate(
             prompt
         )
+    
+    def review_pr(
+    self,
+    review_context: dict,
+    ):
+
+        prompt = (
+            PromptBuilder
+            .pr_review_prompt(
+                review_context
+            )
+        )
+
+        return self.llm.generate(
+            prompt
+        )

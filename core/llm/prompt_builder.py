@@ -139,3 +139,47 @@ class PromptBuilder:
             NEXT SPRINT PRIORITIES
             ======================
             """
+    @staticmethod
+    def pr_review_prompt(
+        review_context: dict,
+    ):
+
+        return f"""
+            You are ForgeMind PR Review Agent.
+
+            Repository Context:
+            {review_context}
+
+            Generate a detailed code review report.
+
+            IMPORTANT:
+            - Do NOT use markdown tables.
+            - Use plain text headings.
+            - Focus on architectural impact.
+            - Focus on testing risks.
+            - Focus on maintainability.
+            - Focus on regression risks.
+
+            Format:
+
+            PR SUMMARY
+            ==========
+
+            RISK LEVEL
+            ==========
+
+            AFFECTED MODULES
+            ================
+
+            ARCHITECTURAL IMPACT
+            ====================
+
+            REVIEW COMMENTS
+            ===============
+
+            TESTING RECOMMENDATIONS
+            =======================
+
+            FINAL RECOMMENDATION
+            ====================
+            """
