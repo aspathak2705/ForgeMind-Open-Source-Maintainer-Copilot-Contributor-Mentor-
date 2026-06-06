@@ -158,6 +158,8 @@ class IssueAgent:
             self.recommender.generate(
                 severity,
                 context["files"],
+                issue_text,
+                context["classes"],
             )
         )
 
