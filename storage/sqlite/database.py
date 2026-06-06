@@ -41,4 +41,24 @@ class Database:
         )
         """)
 
+        cursor.execute(""" CREATE TABLE IF NOT EXISTS agent_memory (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        agent TEXT,
+        task TEXT,
+        result TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+
+        cursor.execute("""CREATE TABLE IF NOT EXISTS reflections (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        agent TEXT,
+        observation TEXT,
+        metadata TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+         """)
+
+
+
         self.conn.commit()

@@ -9,6 +9,17 @@ from agents.maintainer_agent.repository_health import (
 from agents.maintainer_agent.release_notes_generator import (
     ReleaseNotesGenerator,
 )
+from storage.memory.agent_memory import (
+    AgentMemory,
+)
+
+from core.reflection.reflection_service import (
+    ReflectionService,
+)
+
+from core.reporting.report_formatter import (
+    ReportFormatter,
+)
 
 
 class MaintainerAgent:
@@ -27,6 +38,11 @@ class MaintainerAgent:
             ReleaseNotesGenerator()
         )
 
+        self.memory = AgentMemory()
+
+        self.reflection = (
+            ReflectionService()
+        )
     def analyze(self):
 
         health = (
@@ -42,10 +58,33 @@ class MaintainerAgent:
             "hotspots": hotspots,
         }
 
-        summary = (
+        raw_summary = (
             self.release_notes.generate(
                 context
             )
+        )
+
+        summary = (
+            ReportFormatter
+            .maintainer_report(
+                raw_summary
+            )
+        )
+
+        self.memory.remember(
+            "maintainer_agent",
+            "repository_analysis",
+            health,
+        )
+
+        self.reflection.record(
+            "maintainer_agent",
+            "Repository analysis completed",
+            {
+                "hotspots": len(
+                    hotspots
+                )
+            },
         )
 
         return {
