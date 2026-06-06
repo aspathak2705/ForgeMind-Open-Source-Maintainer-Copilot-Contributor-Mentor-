@@ -1,3 +1,4 @@
+
 class ReportFormatter:
 
     @staticmethod
@@ -6,13 +7,15 @@ class ReportFormatter:
     ):
 
         return f"""
-FORGEMIND MAINTAINER REPORT
-===========================
+            FORGEMIND MAINTAINER REPORT
+            ==================================================
 
-EXECUTIVE SUMMARY
------------------
-{summary}
-"""
+            {summary}
+
+            ==================================================
+            END OF REPORT
+            ==================================================
+            """
 
     @staticmethod
     def issue_report(
@@ -20,13 +23,15 @@ EXECUTIVE SUMMARY
     ):
 
         return f"""
-FORGEMIND ISSUE ANALYSIS
-========================
+            FORGEMIND ISSUE ANALYSIS
+            ==================================================
 
-RECOMMENDATION
---------------
-{recommendation}
-"""
+            {recommendation}
+
+            ==================================================
+            END OF ANALYSIS
+            ==================================================
+            """
 
     @staticmethod
     def mentor_report(
@@ -34,10 +39,12 @@ RECOMMENDATION
     ):
 
         return f"""
-FORGEMIND CONTRIBUTOR GUIDE
-===========================
+            FORGEMIND CONTRIBUTOR GUIDE
+            ==================================================
 
-GUIDANCE
---------
-{guidance}
-"""
+            {guidance}
+
+            ==================================================
+            END OF GUIDE
+            ==================================================
+            """

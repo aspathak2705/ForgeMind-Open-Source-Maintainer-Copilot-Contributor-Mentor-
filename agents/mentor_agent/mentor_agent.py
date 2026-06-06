@@ -13,7 +13,13 @@ from core.mentor.onboarding_analyzer import (
 from core.mentor.learning_path_generator import (
     LearningPathGenerator,
 )
+from storage.memory.agent_memory import (
+    AgentMemory,
+)
 
+from core.reflection.reflection_service import (
+    ReflectionService,
+)
 
 class MentorAgent:
 
@@ -33,6 +39,13 @@ class MentorAgent:
 
         self.learning_path_generator = (
             LearningPathGenerator()
+        )
+        self.memory = (
+            AgentMemory()
+        )
+
+        self.reflection = (
+            ReflectionService()
         )
 
     def find_beginner_friendly_files(self):
@@ -128,23 +141,53 @@ class MentorAgent:
             )
         )
 
-    def explain_contribution_path(
-        self,
-        topic: str,
-    ):
+def explain_contribution_path(
+    self,
+    topic: str,
+):
 
-        learning_path = (
-            self.generate_learning_path(
-                topic
-            )
+    learning_path = (
+        self.generate_learning_path(
+            topic
         )
+    )
 
-        recommendations = (
-            self.recommend_files()
-        )
+    recommendations = (
+        self.recommend_files()
+    )
 
-        return {
+    result = {
+        "topic": topic,
+        "learning_path": learning_path,
+        "recommended_files": recommendations,
+    }
+
+    self.memory.remember(
+        "mentor_agent",
+        "contribution_guidance",
+        {
             "topic": topic,
-            "learning_path": learning_path,
-            "recommended_files": recommendations,
-        }
+            "recommended_files": len(
+                recommendations
+            ),
+            "learning_steps": len(
+                learning_path.get(
+                    "steps",
+                    []
+                )
+            ),
+        },
+    )
+
+    self.reflection.record(
+        "mentor_agent",
+        "Contribution path generated",
+        {
+            "topic": topic,
+            "recommended_files": len(
+                recommendations
+            ),
+        },
+    )
+
+    return result

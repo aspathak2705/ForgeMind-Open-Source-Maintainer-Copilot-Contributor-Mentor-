@@ -74,7 +74,22 @@ class MaintainerAgent:
         self.memory.remember(
             "maintainer_agent",
             "repository_analysis",
-            health,
+            {
+                "health": health,
+                "top_hotspot": (
+                    hotspots[0]["file"]
+                    if hotspots
+                    else None
+                ),
+                "impact_score": (
+                    hotspots[0]["impact_score"]
+                    if hotspots
+                    else 0
+                ),
+                "hotspot_count": len(
+                    hotspots
+                ),
+            },
         )
 
         self.reflection.record(

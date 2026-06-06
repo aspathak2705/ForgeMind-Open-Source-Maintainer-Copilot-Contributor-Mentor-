@@ -37,6 +37,13 @@ from core.issue.severity_calculator import (
 from agents.repository_agent.repository_agent import (
     RepositoryAgent,
 )
+from storage.memory.agent_memory import (
+    AgentMemory,
+)
+
+from core.reflection.reflection_service import (
+    ReflectionService,
+)
 
 
 class IssueAgent:
@@ -77,6 +84,13 @@ class IssueAgent:
 
         self.repository_agent = (
             RepositoryAgent()
+        )
+        self.memory = (
+            AgentMemory()
+        )
+
+        self.reflection = (
+            ReflectionService()
         )
 
     def analyze(
@@ -162,6 +176,34 @@ class IssueAgent:
                 context["classes"],
             )
         )
+
+        self.memory.remember(
+            "issue_agent",
+            "issue_triage",
+            {
+                "type": issue_type,
+                "severity": severity,
+                "confidence": confidence,
+                "files": len(
+                    context["files"]
+                ),
+                "classes": len(
+                    context["classes"]
+                ),
+            },
+        )
+
+        self.reflection.record(
+            "issue_agent",
+            "Issue triaged",
+            {
+                "type": issue_type,
+                "severity": severity,
+                "confidence": confidence,
+            },
+        )
+
+
 
         return IssueAnalysis(
             issue_type=issue_type,
