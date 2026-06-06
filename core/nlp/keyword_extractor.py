@@ -1,5 +1,7 @@
 import nltk
 
+from collections import Counter
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -41,10 +43,25 @@ class KeywordExtractor:
                 .lemmatize(token)
             )
 
+            if len(keyword) < 2:
+                continue
+
             keywords.append(
                 keyword
             )
 
-        return list(
-            set(keywords)
+        counts = Counter(
+            keywords
         )
+
+        ranked = sorted(
+            counts.items(),
+            key=lambda x: x[1],
+            reverse=True,
+        )
+
+        return [
+            keyword
+            for keyword, _
+            in ranked
+        ]

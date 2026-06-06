@@ -36,7 +36,7 @@ class RepositorySearch:
 
             functions = json.loads(row[4])
 
-            # file match
+            # File match
             if query in path.lower():
 
                 results.append(
@@ -48,7 +48,7 @@ class RepositorySearch:
                     )
                 )
 
-            # import match
+            # Import match
             for imp in imports:
 
                 if query in imp.lower():
@@ -62,21 +62,44 @@ class RepositorySearch:
                         )
                     )
 
-            # class match
+            # Class match
             for cls in classes:
 
-                if query in cls.lower():
+                class_name = ""
+
+                if isinstance(
+                    cls,
+                    dict,
+                ):
+
+                    class_name = cls.get(
+                        "name",
+                        ""
+                    )
+
+                elif isinstance(
+                    cls,
+                    str,
+                ):
+
+                    class_name = cls
+
+                if (
+                    class_name
+                    and query
+                    in class_name.lower()
+                ):
 
                     results.append(
                         SearchResult(
                             file_path=path,
                             match_type="class",
-                            matched_value=cls,
+                            matched_value=class_name,
                             score=95,
                         )
                     )
 
-            # function match
+            # Function match
             for func in functions:
 
                 if query in func.lower():

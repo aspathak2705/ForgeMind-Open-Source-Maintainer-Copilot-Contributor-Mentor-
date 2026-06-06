@@ -9,7 +9,9 @@ from core.repository.impact_analyzer import (
 from core.repository.repository_ranker import (
     RepositoryRanker,
 )
-
+from core.search.context_ranker import (
+    ContextRanker,
+)
 
 class RepositoryAgent:
 
@@ -23,6 +25,10 @@ class RepositoryAgent:
 
         self.ranker = (
             RepositoryRanker()
+        )
+
+        self.context_ranker = (
+            ContextRanker()
         )
 
     def explain(
@@ -127,6 +133,12 @@ class RepositoryAgent:
                     ],
                 }
             )
+
+        enriched_files = (
+            self.context_ranker.rank_files(
+                enriched_files
+            )
+        )
 
         return {
             "files": enriched_files,

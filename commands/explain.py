@@ -1,6 +1,7 @@
 from agents.repository_agent.repository_agent import (
     RepositoryAgent,
 )
+from pathlib import Path
 
 
 def explain(query: str):
@@ -43,7 +44,9 @@ def explain(query: str):
         for file_info in files:
 
             print(
-                f"File: {file_info['file']}"
+                Path(
+                    file_info["file"]
+                ).name
             )
 
             print(
