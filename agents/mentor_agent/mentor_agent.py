@@ -21,6 +21,7 @@ from core.reflection.reflection_service import (
     ReflectionService,
 )
 
+
 class MentorAgent:
 
     def __init__(self):
@@ -141,53 +142,53 @@ class MentorAgent:
             )
         )
 
-def explain_contribution_path(
-    self,
-    topic: str,
-):
+    def explain_contribution_path(
+        self,
+        topic: str,
+    ):
 
-    learning_path = (
-        self.generate_learning_path(
-            topic
+        learning_path = (
+            self.generate_learning_path(
+                topic
+            )
         )
-    )
 
-    recommendations = (
-        self.recommend_files()
-    )
+        recommendations = (
+            self.recommend_files()
+        )
 
-    result = {
-        "topic": topic,
-        "learning_path": learning_path,
-        "recommended_files": recommendations,
-    }
-
-    self.memory.remember(
-        "mentor_agent",
-        "contribution_guidance",
-        {
+        result = {
             "topic": topic,
-            "recommended_files": len(
-                recommendations
-            ),
-            "learning_steps": len(
-                learning_path.get(
-                    "steps",
-                    []
-                )
-            ),
-        },
-    )
+            "learning_path": learning_path,
+            "recommended_files": recommendations,
+        }
 
-    self.reflection.record(
-        "mentor_agent",
-        "Contribution path generated",
-        {
-            "topic": topic,
-            "recommended_files": len(
-                recommendations
-            ),
-        },
-    )
+        self.memory.remember(
+            "mentor_agent",
+            "contribution_guidance",
+            {
+                "topic": topic,
+                "recommended_files": len(
+                    recommendations
+                ),
+                "learning_steps": len(
+                    learning_path.get(
+                        "steps",
+                        []
+                    )
+                ),
+            },
+        )
 
-    return result
+        self.reflection.record(
+            "mentor_agent",
+            "Contribution path generated",
+            {
+                "topic": topic,
+                "recommended_files": len(
+                    recommendations
+                ),
+            },
+        )
+
+        return result
